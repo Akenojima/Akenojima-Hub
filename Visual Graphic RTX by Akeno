@@ -1,0 +1,91 @@
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local ASSET_ID = "rbxassetid://74679024013126" 
+
+local function ShowAkenoIntro()
+    local player = Players.LocalPlayer
+    local pGui = player:WaitForChild("PlayerGui")
+    
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "AkenoRTX_Intro"
+    sg.IgnoreGuiInset = true
+    sg.DisplayOrder = 999
+    sg.Parent = pGui
+    
+    local logo = Instance.new("ImageLabel")
+    logo.Name = "AkenoLogo"
+    logo.AnchorPoint = Vector2.new(0.5, 0.5)
+    logo.Position = UDim2.new(0.5, 0, 0.5, 0)
+    logo.Size = UDim2.new(0, 0, 0, 0)
+    logo.BackgroundTransparency = 1
+    logo.Image = ASSET_ID
+    logo.ImageTransparency = 1
+    logo.Parent = sg
+
+    local aspect = Instance.new("UIAspectRatioConstraint")
+    aspect.AspectRatio = 1
+    aspect.Parent = logo
+
+    task.wait(0.5)
+
+    local introTween = TweenService:Create(logo, TweenInfo.new(1.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 600, 0, 600),
+        ImageTransparency = 0
+    })
+    
+    introTween:Play()
+    introTween.Completed:Wait()
+
+    task.wait(4)
+
+    local outroTween = TweenService:Create(logo, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        ImageTransparency = 1,
+        Size = UDim2.new(0, 500, 0, 500)
+    })
+    
+    outroTween:Play()
+    outroTween.Completed:Wait()
+    
+    sg:Destroy()
+end
+
+local function ApplyRTXSettings()
+
+    for _, item in pairs(Lighting:GetChildren()) do
+        if item:IsA("PostProcessEffect") or item:IsA("Atmosphere") then 
+            item:Destroy() 
+        end
+    end
+
+    Lighting.ClockTime = 7
+    Lighting.Brightness = 3
+    Lighting.ShadowSoftness = 0
+    Lighting.EnvironmentDiffuseScale = 1
+    Lighting.EnvironmentSpecularScale = 1
+    Lighting.OutdoorAmbient = Color3.fromRGB(70, 75, 90)
+    Lighting.ExposureCompensation = 0.5
+
+    local atm = Instance.new("Atmosphere", Lighting)
+    atm.Density = 0.15
+    atm.Offset = 0.2
+    atm.Color = Color3.fromRGB(200, 215, 230)
+    atm.Decay = Color3.fromRGB(150, 160, 180)
+    atm.Glare = 0.2
+    atm.Haze = 0.5
+
+    local cc = Instance.new("ColorCorrectionEffect", Lighting)
+    cc.TintColor = Color3.fromRGB(240, 245, 255) 
+
+    local dof = Instance.new("DepthOfFieldEffect", Lighting)
+    dof.FarIntensity = 0.25
+	dof.NearIntensity = 0
+    dof.FocusDistance = 35
+    dof.InFocusRadius = 15
+end
+
+ApplyRTXSettings()
+task.spawn(ShowAkenoIntro)
+
+print("RTX Graphics by Akeno is now ACTIVE!")
